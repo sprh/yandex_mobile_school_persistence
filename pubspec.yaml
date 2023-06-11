@@ -1,0 +1,31 @@
+name: yandex_mobile_school_persistence
+description: A new Flutter project.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  path_provider: ^2.0.15
+  shared_preferences: ^2.1.2
+  json_annotation: ^4.8.1
+  isar: ^3.1.0+1
+  sqflite: ^2.2.8+4
+  http: ^0.13.6
+  freezed_annotation: ^2.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  json_serializable: ^6.6.2
+  build_runner: ^2.3.3
+  isar_generator: ^3.1.0+1
+  freezed: ^2.3.5
+
+flutter:
+  uses-material-design: true
