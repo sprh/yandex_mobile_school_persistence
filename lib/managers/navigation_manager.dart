@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:yandex_mobile_school_persistence/models/github_profile.dart';
 
 import '../ui/profile_page.dart';
 
@@ -7,15 +6,20 @@ class NavigationManager {
   static final hostNavigationKey = GlobalKey<NavigatorState>();
 
   static void showGithubProfileScreen({
-    String? login,
-    GithubProfile? profile,
+    required String login,
   }) =>
-      hostNavigationKey.currentState!.push(
-        MaterialPageRoute(
-          builder: (context) => GithubProfilePage(
-            login: login,
-            profile: profile,
-          ),
+      hostNavigationKey.currentState!.restorablePush(
+        _buildProfilePageRoute,
+        arguments: login,
+      );
+
+  static Route _buildProfilePageRoute(
+    BuildContext context,
+    Object? args,
+  ) =>
+      MaterialPageRoute(
+        builder: (context) => GithubProfilePage(
+          login: args as String,
         ),
       );
 

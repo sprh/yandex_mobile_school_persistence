@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      restorationScopeId: "github_profiles_restoration_scope_id",
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,

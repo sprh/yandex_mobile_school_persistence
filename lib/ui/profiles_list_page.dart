@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:yandex_mobile_school_persistence/managers/profiles_manager.dart';
-import 'package:yandex_mobile_school_persistence/models/github_profile.dart';
+
+import '../managers/profiles_manager.dart';
 
 class GithubProfilesList extends StatefulWidget {
   const GithubProfilesList({super.key});
@@ -9,18 +9,18 @@ class GithubProfilesList extends StatefulWidget {
   State<StatefulWidget> createState() => _GithubProfilesListState();
 }
 
-class _GithubProfilesListState extends State<GithubProfilesList> {
-  @override
-  void initState() {
-    super.initState();
-    ProfilesManager.init();
-  }
+class _GithubProfilesListState extends State<GithubProfilesList>
+    with RestorationMixin {
+  final _profiles = ProfilesListRestorationProperty();
+  final _textEditingController = RestorableTextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final profiles = _profiles.value;
     return Scaffold(
       appBar: AppBar(
         title: TextField(
+          controller: _textEditingController.value,
           decoration: const InputDecoration(
             hintText: 'Type github name...',
             hintStyle: TextStyle(
@@ -34,28 +34,58 @@ class _GithubProfilesListState extends State<GithubProfilesList> {
             color: Colors.white,
           ),
           onSubmitted: (login) {
+            setState(() {
+              _profiles.value = [..._profiles.value, login];
+            });
             ProfilesManager.onSearch(login);
           },
         ),
       ),
-      body: StreamBuilder<List<GithubProfile>>(
-        stream: ProfilesManager.searchDataStream,
-        builder: (context, snapshot) {
-          final data = snapshot.data;
-          if (data == null || data.isEmpty) {
-            return const Center(child: Text("Empty search history"));
-          }
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) => ListTile(
-              title: Text(data[index].login),
-              onTap: () => ProfilesManager.onOpenFromHistory(
-                data[index],
+      body: profiles.isEmpty
+          ? const Center(child: Text("Empty search history"))
+          : ListView.builder(
+              itemCount: _profiles.value.length,
+              itemBuilder: (context, index) => ListTile(
+                title: Text(_profiles.value[index]),
+                onTap: () => ProfilesManager.onSearch(
+                  _profiles.value[index],
+                ),
               ),
             ),
-          );
-        },
-      ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _profiles.dispose();
+  }
+
+  @override
+  String? get restorationId => 'profiles_list_restoration_id';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_profiles, 'profiles_list');
+    registerForRestoration(_textEditingController, "text_controller");
+  }
+}
+
+class ProfilesListRestorationProperty extends RestorableValue<List<String>> {
+  ProfilesListRestorationProperty() : super();
+
+  @override
+  List<String> createDefaultValue() => [];
+
+  @override
+  List<String> fromPrimitives(Object? data) =>
+      (data as List).map((e) => e as String).toList();
+
+  @override
+  Object? toPrimitives() => value;
+
+  @override
+  void didUpdateValue(List<String>? oldValue) {
+    notifyListeners();
   }
 }

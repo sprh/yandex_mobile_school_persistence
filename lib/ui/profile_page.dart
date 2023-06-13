@@ -4,30 +4,26 @@ import 'package:yandex_mobile_school_persistence/managers/profiles_manager.dart'
 import '../models/github_profile.dart';
 
 class GithubProfilePage extends StatefulWidget {
-  final String? login;
-  final GithubProfile? profile;
+  final String login;
 
   const GithubProfilePage({
-    this.login,
-    this.profile,
+    required this.login,
     super.key,
-  }) : assert(login != null || profile != null);
+  });
 
   @override
   State<StatefulWidget> createState() => _GithubProfilePageState();
 }
 
 class _GithubProfilePageState extends State<GithubProfilePage> {
-  late GithubProfile? data = widget.profile;
+  GithubProfile? data;
 
   @override
   void initState() {
     super.initState();
-    if (widget.login != null) {
-      ProfilesManager.getProfile(widget.login!).then(
-        (value) => setState(() => data = value),
-      );
-    }
+    ProfilesManager.getProfile(widget.login).then(
+      (value) => setState(() => data = value),
+    );
   }
 
   @override
